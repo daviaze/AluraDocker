@@ -1,0 +1,33 @@
+docker pull [IMAGE] - Baixa imagem do dockerHub;
+docker run - Procura imagem localmente -> Procura imagem no dockerHub para baixar -> Valida imagem com Hash -> Baixa imagem -> Executa container;
+docker run -d -P [IMAGE] - Irá pegar a imagem local ou baixa-la, e irá mapear o container para uma porta local aleatória;
+docker run -d -p 8080:80 [IMAGE] - Irá pegar a imagem local ou baixa-la, e irá mapear o container para uma porta local específica, a porta 8080 irá mapear para a porta 80 do container;
+docker port [ID do container] - Visualiza como o mapeamento de portas do container especificado está sendo feito;
+docker stop [ID ou NOME] - Para a execução do container especificado;
+docker start - Reexecuta o container;
+docker ps - Visualiza todos os containers ativos;
+docker ps -a - Visualiza todos os containers ativos ou não;
+docker ps -s - Visualiza todos os containers + o campo de Size;
+docker images - Visualiza todas as imagens locais;
+docker exec -it [ID do container] [COMANDO] - Executa um comando no container, o "-it" executa de forma interativa o terminal daquele container, utilizado para entrar no terminal daquele container em execução;
+docker rm [ID do container] - Remove container;
+docker history [ID da imagem] - Visualiza todas as camadas da imagem;
+docker build -t teste/app-node:1 . - Executa dockerfile para criar a imagem, especificando um nome e uma versão para imagem no diretório atual;
+docker volume ls - Visualiza todos os volumes;
+docker volume create [Nome do volume] - Cria volume;
+docker inspect [Id do container] - Visualiza especificações do container;
+docker network ls - Visualiza detalhes das redes dos containers;
+
+*Imagem -> Conjunto de camadas empilhadas para formas um container, read-only, ou seja, imutáveis;
+*Container -> Criado em cima da imagem, e possuem uma camada temporária onde pode-se armazenar informações,
+pois quando é removido, tudo será perdido, o container é bem leve por conta de se beneficiar da reciclagem de imagens e camadas já baixadas, e
+possuirem basicamente somente a camada de escrita, ou seja, pode se entender a imagem como uma receita, e o container como um bolo;
+
+Variáveis em Docker: ARG e ENV -> ARG instancia uma variável somente em tempo de criação da imagem, enquanto o ENV irá carrega-la no container para ser utilizada em tempo de execução;
+
+Subir imagem para o dockerHub:
+OBS: O nome do repositório da imagem deve conter o nome do usuário de login da conta para conseguir subir a imagem com sucesso***
+
+1º - Autenticar utilizando "docker login -u [Nome de Login]";
+2º - docker tag teste/app-node:1 [Nome de Login]/teste/app-node:1 ->  Commita a imagem com o diretório com o nome do usuário
+3º - docker push [Nome de Login]/teste/app-node:1 -> Enviar para o dockerHub;

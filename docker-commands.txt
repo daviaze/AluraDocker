@@ -17,6 +17,10 @@ docker volume ls - Visualiza todos os volumes;
 docker volume create [Nome do volume] - Cria volume;
 docker inspect [Id do container] - Visualiza especificações do container;
 docker network ls - Visualiza detalhes das redes dos containers;
+docker network create --driver bridge minha-bridge - Cria rede bridge para interligar os containers;
+
+Rede Bridge - a rede bridge funciona como uma rede morta, que irá fazer conexões ponto-a-ponto entre dispositivos,
+exemplo uma casa em que tenha 3 roteadores interligados em modo bridge, todos irão conhecer um ao outro, porém não irá transmitir internet;
 
 *Imagem -> Conjunto de camadas empilhadas para formas um container, read-only, ou seja, imutáveis;
 *Container -> Criado em cima da imagem, e possuem uma camada temporária onde pode-se armazenar informações,

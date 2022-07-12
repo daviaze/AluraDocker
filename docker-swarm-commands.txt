@@ -1,0 +1,13 @@
+Docker Swarm - O que é?
+*Docker Swarm é um orquestrador de containeres, o mesmo dentro de um contexto de um cluster, irá provisionar e regir os containeres
+de forma automática, a fim de manter a disponibilidade e a escalabilidade.
+
+-Instalação-
+*Instalar docker-machine
+*Instalar VirtualBox (Driver para criação de máquinas virtuais)
+
+-Comandos-
+*docker-machine create -d virtualbox vm1 [DRIVER DE MÁQUINA VIRTUAL] -> Utiliza a docker machine para criar a máquina virtual;
+docker-machine ls -> Visualiza todas as maquinas virtuais instanciadas;
+docker-machine start vm1 -> Inicializa a maquina virtual caso não esteja operante;
+docker-machine ssh vm1 -> Entra dentro da máquina virtual LINUX;

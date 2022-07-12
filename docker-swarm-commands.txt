@@ -13,8 +13,10 @@ docker-machine start vm1 -> Inicializa a maquina virtual caso não esteja operan
 docker-machine ssh vm1 -> Entra dentro da máquina virtual LINUX;
 
 -Comandos do docker swarm-
-docker swarm init --advertise-addr [IP DA MÁQUINA VIRTUAL] -> Para iniciar a maquina virtual, é necessário estar dentro da máquina virtual,
+docker swarm init --advertise-addr [IP DA MÁQUINA VIRTUAL] -> Para iniciar o swarm, é necessário estar dentro da máquina virtual,
 e como boa prática utilizar o --advertise..., com este comando será fixado o ip da máquina em que está sendo configurado
-o cluster como a orquestradora, ou manager;
+o cluster como a orquestradora, ou manager. Depois que rodar o comando, será disponibilizado na tela o comando para adicionar as outras
+máquinas virtuais como operários do cluster, sendo que a primeira por enquanto é a única orquestradora;
+docker swarm join-token workr -> Visualiza o comando para adicionar outras máquinas virtuais no swarm como workr (operario);
 docker info -> Visualiza algumas especificações, dentre elas se a máquina virtual em questão está configurado em um Swarm ou não;
 

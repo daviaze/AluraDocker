@@ -4,10 +4,17 @@ de forma automática, a fim de manter a disponibilidade e a escalabilidade.
 
 -Instalação-
 *Instalar docker-machine
-*Instalar VirtualBox (Driver para criação de máquinas virtuais)
+*Instalar VirtualBox (Driver para criação de máquinas virtuais leves)
 
--Comandos-
-*docker-machine create -d virtualbox vm1 [DRIVER DE MÁQUINA VIRTUAL] -> Utiliza a docker machine para criar a máquina virtual;
+-Comandos do docker machine-
+docker-machine create -d virtualbox vm1 [DRIVER DE MÁQUINA VIRTUAL] -> Utiliza a docker machine para criar a máquina virtual;
 docker-machine ls -> Visualiza todas as maquinas virtuais instanciadas;
 docker-machine start vm1 -> Inicializa a maquina virtual caso não esteja operante;
 docker-machine ssh vm1 -> Entra dentro da máquina virtual LINUX;
+
+-Comandos do docker swarm-
+docker swarm init --advertise-addr [IP DA MÁQUINA VIRTUAL] -> Para iniciar a maquina virtual, é necessário estar dentro da máquina virtual,
+e como boa prática utilizar o --advertise..., com este comando será fixado o ip da máquina em que está sendo configurado
+o cluster como a orquestradora, ou manager;
+docker info -> Visualiza algumas especificações, dentre elas se a máquina virtual em questão está configurado em um Swarm ou não;
+

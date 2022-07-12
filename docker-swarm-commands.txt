@@ -19,4 +19,22 @@ o cluster como a orquestradora, ou manager. Depois que rodar o comando, será di
 máquinas virtuais como operários do cluster, sendo que a primeira por enquanto é a única orquestradora;
 docker swarm join-token workr -> Visualiza o comando para adicionar outras máquinas virtuais no swarm como workr (operario);
 docker info -> Visualiza algumas especificações, dentre elas se a máquina virtual em questão está configurado em um Swarm ou não;
+docker node ls -> Visualiza todos os nós do swarm. OBS: só pode ser utilizado dentro da máquina virtual manager;
+docker swarm leave -> Modifica o status da máquina virtual para "Down" para que a mesma seja removida pelo manager;
+docker node rm [ID do nó] -> Exclui o nó do swarm;
+docker node inspect vm2 -> Visualiza especificações da vm2, dentre elas, o IP daquela máquina virtual. OBS: só pode ser utilizado
+dentro da máquina virtual manager;
+docker service create -p 8080:3000 [IMAGEM] -> Instancia o container dentro do cluster. OBS: O container precisa ser instanciado como 
+um serviço para ser visto no escopo global do cluster, só pode ser utilizado dentro da máquina virtual manager;
+docker service ls -> Visualiza todos os serviços;
 
+#Backup (CASO ACONTEÇÃ UMA CATASTROFE E O MANAGER SEJA PERDIDO)
+cp -r /var/lib/docker/swarm/ backup -> copia o conteúdo de configuração do swarm da pasta default para a pasta atual, em formato json.
+OBS: precisa ter permissões administrativas, primeiramente deverá rodar o comodando "sudo su";
+cp -r backup /var/lib/docker/swarm/ -> copia tudo do backup pra pasta raiz do swarm;
+docker swarm init --force-new-cluster --advertise-addr [IP DA MÁQUINA VIRTUAL] -> Recria o swarm novamente com as mesmas configurações,
+com base no backup;
+
+
+
+***Portas são compartilhadas entre nós do swarm e são acessíveis a partir de qualquer nó graças ao routing mesh***

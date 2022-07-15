@@ -57,6 +57,12 @@ Por padrão todos os nós adicionados dentro do swarm irão pertencer a mesma re
 docker network create -d overlay my-overlay;
 docker service create -p 8080:3000 -network my-overlay -- replicas 4 ubuntu sleep 1
 
+DEPLOY DE UM ARQUIVO COMPOSE NO SWARM:
+1º passo - Preencher o arquivo compose, especificando replicas, constraints, etc.
+2º passo - Tranferir o arquivo para um nó manager;
+3º passo - Executar o comando: docker stack deploy --compose-file docker-compose.yml [Nome que quer que a stack(conjunto de serviços)
+ tenha] ->  
+
 #Backup (CASO ACONTEÇA UMA CATASTROFE E O MANAGER SEJA PERDIDO)
 cp -r /var/lib/docker/swarm/ backup -> copia o conteúdo de configuração do swarm da pasta default para a pasta atual, em formato json.
 OBS: precisa ter permissões administrativas, primeiramente deverá rodar o comodando "sudo su";

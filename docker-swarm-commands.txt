@@ -27,14 +27,23 @@ dentro da máquina virtual manager;
 docker service create -p 8080:3000 [IMAGEM] -> Instancia o container dentro do cluster. OBS: O container precisa ser instanciado como 
 um serviço para ser visto no escopo global do cluster, só pode ser utilizado dentro da máquina virtual manager;
 docker service ls -> Visualiza todos os serviços;
+docker swarm join-token manager -> Visualiza o comando para adicionar outras máquinas como manager;
+docker node demote [ID do nó] - Rebaixa o nó para worker para poder elimina-lo;
 
-#Backup (CASO ACONTEÇÃ UMA CATASTROFE E O MANAGER SEJA PERDIDO)
+1º opção para inviabilizar um nó de executar alguma tarefa (RESTRINGINDO O NÓ):
+docker node update --availability drain [Nome do nó] - Atualiza o status de viabilidade do nó para Drain, para que o nó manager se torne incapaz de rodar
+serviços;
+docker node update --availability active [Nome do nó] - Atualiza o status de viabilidade do nó para active, status default;
+
+2º opção para inviabilizar um nó de executar alguma tarefa (RESTRINGINDO O SERVIÇO):
+docker service update --constraint-add node.role==worker [ID do nó] - Atualiza a limitação do serviço para rodar somente em nós workers;
+
+
+#Backup (CASO ACONTEÇA UMA CATASTROFE E O MANAGER SEJA PERDIDO)
 cp -r /var/lib/docker/swarm/ backup -> copia o conteúdo de configuração do swarm da pasta default para a pasta atual, em formato json.
 OBS: precisa ter permissões administrativas, primeiramente deverá rodar o comodando "sudo su";
 cp -r backup /var/lib/docker/swarm/ -> copia tudo do backup pra pasta raiz do swarm;
 docker swarm init --force-new-cluster --advertise-addr [IP DA MÁQUINA VIRTUAL] -> Recria o swarm novamente com as mesmas configurações,
 com base no backup;
-
-
 
 ***Portas são compartilhadas entre nós do swarm e são acessíveis a partir de qualquer nó graças ao routing mesh***

@@ -2,6 +2,8 @@ Docker Swarm - O que é?
 *Docker Swarm é um orquestrador de containeres, o mesmo dentro de um contexto de um cluster, irá provisionar e regir os containeres
 de forma automática, a fim de manter a disponibilidade e a escalabilidade.
 
+***Portas são compartilhadas entre nós do swarm e são acessíveis a partir de qualquer nó graças ao routing mesh***
+
 -Instalação-
 *Instalar docker-machine
 *Instalar VirtualBox (Driver para criação de máquinas virtuais leves)
@@ -27,6 +29,7 @@ dentro da máquina virtual manager;
 docker service create -p 8080:3000 [IMAGEM] -> Instancia o container dentro do cluster. OBS: O container precisa ser instanciado como 
 um serviço para ser visto no escopo global do cluster, só pode ser utilizado dentro da máquina virtual manager;
 docker service ls -> Visualiza todos os serviços;
+docker service ps [2 iniciais do ID do serviço] -> Visualiza um serviço em específico;
 docker swarm join-token manager -> Visualiza o comando para adicionar outras máquinas como manager;
 docker node demote [ID do nó] - Rebaixa o nó para worker para poder elimina-lo;
 
@@ -35,9 +38,24 @@ docker node update --availability drain [Nome do nó] - Atualiza o status de via
 serviços;
 docker node update --availability active [Nome do nó] - Atualiza o status de viabilidade do nó para active, status default;
 
-2º opção para inviabilizar um nó de executar alguma tarefa (RESTRINGINDO O SERVIÇO):
+2º opção para inviabilizar um nó de executar alguma tarefa (RESTRINGINDO O SERVIÇO) - MAIS APLICÁVEL:
 docker service update --constraint-add node.role==worker [ID do nó] - Atualiza a limitação do serviço para rodar somente em nós workers;
 
+#ATENÇÃO!!#
+Afinal, que tipo de serviço deve ser alocado em nós managers? Serviços primordiais para nossa aplicação, como serviços de monitoramento, segurança, infraestrutura, etc;
+
+Serviços Replicados:
+Como dividir uma tarefa para vários nós? Ex: Caso tenha um serviço rodando na vm1 e tenha muitas requisições para processar, o interessante seria que outro nó
+ajudasse nessas requisições, com isso surge o conceito de réplicas, em que são criados réplicas de uma determinada tarefa e as mesmas irão ser alocadas de forma aleatória entre os nós a fim de distribuir a tarefa.
+docker service update --replicas 4 [ID do serviço] OU docker service scale [ID do serviço]=5 - Este comando gerará as réplicas de um determinado serviço. !NO ENTANTO VALE RESSALTAR QUE, CASO O OBJETIVO SEJA RODAR O SERVIÇO EM TODOS OS NÓS, UTILIZAR RÉPLICAS NÃO É O RECOMENDADO, POIS IRÁ DEIXAR A APLICAÇÃO PESADA, NESTE CASO É RECOMENDADO UTILOIZAR O SERVIÇO COM ESTADO "GLOBAL";
+
+Serviços Globais:
+docker service create -p 8080:3000 --mode global [IMAGEM] - Bons exemplos de serviços globais são serviços de monitoramento e segurança.
+
+REDE:
+Por padrão todos os nós adicionados dentro do swarm irão pertencer a mesma rede, chamada de rede ingress, que faz com que todos os nós possam se comunicar entre si, e de forma segura por meio de criptografia assimétrica. No entanto dentro desta rede padrão, os containeres só podem se comunicar entre si utilizando o ip do container. Para solucionar este problema, é possível criar sua própria rede overlay, e ao adicionar serviços replicados especificando a rede criada, a partir daí os mesmos conseguirão se comunicar, segue os comandos abaixo:
+docker network create -d overlay my-overlay;
+docker service create -p 8080:3000 -network my-overlay -- replicas 4 ubuntu sleep 1
 
 #Backup (CASO ACONTEÇA UMA CATASTROFE E O MANAGER SEJA PERDIDO)
 cp -r /var/lib/docker/swarm/ backup -> copia o conteúdo de configuração do swarm da pasta default para a pasta atual, em formato json.
@@ -45,5 +63,3 @@ OBS: precisa ter permissões administrativas, primeiramente deverá rodar o como
 cp -r backup /var/lib/docker/swarm/ -> copia tudo do backup pra pasta raiz do swarm;
 docker swarm init --force-new-cluster --advertise-addr [IP DA MÁQUINA VIRTUAL] -> Recria o swarm novamente com as mesmas configurações,
 com base no backup;
-
-***Portas são compartilhadas entre nós do swarm e são acessíveis a partir de qualquer nó graças ao routing mesh***

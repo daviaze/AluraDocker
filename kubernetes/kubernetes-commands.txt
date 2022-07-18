@@ -11,3 +11,16 @@ kubectl describe pod [nome do pod] - Retorna informações sobre aquele pod;
 kubectl edit pod [nome do pod] - Para edição de um pod;
 kubectl apply -f .\primeiro-pod.yaml - Cria ou Atualiza o pod de forma declarativa com base no arquivo yaml;
 kubectl exec -it [nome do pod] -- bash - Executa comando para entrar dentro de container dentro do pod;
+
+Escopo de criação de um serviço:
+apiVersion: v1
+kind: Service -> Tipo de arquivo
+metadata:
+  name: svc-pod-2 -> Nome do serviço
+spec:
+  type: ClusterIP -> Tipo de serviço
+  selector:
+    app: segundo-pod -> Seleciona somente os pods que possuem esta label
+  ports:
+    - port: 9000 -> Porta em que ele vai expor
+      targetPort: 80 -> Porta em que ele vai apontar no pod

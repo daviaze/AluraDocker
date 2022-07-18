@@ -1,0 +1,13 @@
+*pods -  Funciona como uma capsula com um ip designado, em que irá conter um ou mais containeres dentro da mesma;
+*kubectl - Gerenciador dos pods do sistema de clusters do kubernetes -> É ele quem vai enviar as requisições para criar, atualizar, ler,
+e remover os pods;
+
+
+kubectl get nodes - Retorna todos os nós presentes no cluster;
+kubectl get pods - Retorna todos os pods;
+kubectl run [nome do pod que deseja criar] --image=[imagem:versao] - Cria um pod com uma imagem para um container
+que será criado dentro do pod;
+kubectl describe pod [nome do pod] - Retorna informações sobre aquele pod;
+kubectl edit pod [nome do pod] - Para edição de um pod;
+kubectl apply -f .\primeiro-pod.yaml - Cria ou Atualiza o pod de forma declarativa com base no arquivo yaml;
+kubectl exec -it [nome do pod] -- bash - Executa comando para entrar dentro de container dentro do pod;

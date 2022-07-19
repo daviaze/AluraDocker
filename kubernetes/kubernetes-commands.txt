@@ -12,15 +12,61 @@ kubectl edit pod [nome do pod] - Para edição de um pod;
 kubectl apply -f .\primeiro-pod.yaml - Cria ou Atualiza o pod de forma declarativa com base no arquivo yaml;
 kubectl exec -it [nome do pod] -- bash - Executa comando para entrar dentro de container dentro do pod;
 
-Escopo de criação de um serviço:
+*Serviço ClusterIP -> utilizado para estabelecer conexão entre os nós do cluster;
+*Serviço NodePort -> utilizado para estabelecer conexão para fora do cluster mas também se
+comunica internamente entre os nós do cluster;
+*Serviço LoadBalancer -> parecido com o ClusterIP, abre comunicação para o mundo externo,
+por exemplo: para abrir conexão com um provedor de nuvem como google cloud, azure, aws, etc.
+
+Escopo genérico de criação de um pod:
 apiVersion: v1
-kind: Service -> Tipo de arquivo
+kind: Pod -> Tipo de recurso
 metadata:
-  name: svc-pod-2 -> Nome do serviço
+  name: pod-1 -> Nome do recurso
 spec:
-  type: ClusterIP -> Tipo de serviço
+  containers:
+    - name: container-pod-1 -> Nome do container
+      image: nginx:latest
+      ports:
+        - containerPort: 80 -> Expoe nessa porta
+
+
+Escopo genérico de criação de um serviço ClusterIP:
+apiVersion: v1
+kind: Service -> Tipo de recurso
+metadata:
+  name: svc-pod-2 -> Nome do recurso
+spec:
+  type: ClusterIP -> Tipo do recurso
   selector:
     app: segundo-pod -> Seleciona somente os pods que possuem esta label
   ports:
     - port: 9000 -> Porta em que ele vai expor
       targetPort: 80 -> Porta em que ele vai apontar no pod
+
+Escopo genérico de criação de um serviço NodePort:
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-pod-1
+spec:
+  type: NodePort
+  selector:
+    app: primeiro-pod
+  ports:
+    - port: 8000
+      targetPort: 80
+      NodePort: 30000 -> Porta em que o pod irá expor para fora do cluster
+
+Escopo genérido de criação de um serviço LoadBalancer:
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-pod-1-loadbalancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: primeiro-pod
+  ports:
+    - port: 80
+      nodePort: 30000

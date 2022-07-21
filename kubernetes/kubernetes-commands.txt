@@ -70,3 +70,47 @@ spec:
   ports:
     - port: 80
       nodePort: 30000
+
+Escopo para criar variáveis de ambiente em um pod (geralmente necessário em banco de dados):
+apiVersion: v1
+kind: Pod -> Tipo de recurso
+metadata:
+  name: pod-1 -> Nome do recurso
+spec:
+  containers:
+    - name: container-pod-1 -> Nome do container
+      image: nginx:latest
+      ports:
+        - containerPort: 80 -> Expoe nessa porta
+      env:
+        - name: "MYSQL_ROOT_PASSWORD"
+          value: "123456"
+        - name: "MYSQL_DATABASE"
+          value: "empresa
+
+OBS: Apesar do exemplo acima aplicado para criar variáveis de ambiente, é de boa prática criar um ConfigMap, que armazenará todas essas
+variáveis, para garantir o baixo acoplamento, e reutilização das variáveis.
+
+Escopo para criar o ConfigMap:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap
+data:
+  MYSQL_ROOT_PASSWORD: 123456
+  MYSQL_DATABASE: empresa
+
+Segue o exemplo abaixo para puxar as variáveis de ambiente de um configMap:
+apiVersion: v1
+kind: Pod -> Tipo de recurso
+metadata:
+  name: pod-1 -> Nome do recurso
+spec:
+  containers:
+    - name: container-pod-1 -> Nome do container
+      image: nginx:latest
+      ports:
+        - containerPort: 80 -> Expoe nessa porta
+      envFrom:
+        - configMapRef:
+            name: configmap -> Faz a referência ao configMap criado anteriormente

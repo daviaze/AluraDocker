@@ -5,6 +5,9 @@ e remover os pods;
 
 kubectl get nodes - Retorna todos os nós presentes no cluster;
 kubectl get pods - Retorna todos os pods;
+kubectl get svc - Retorna todos os serviços;
+kubectl get deployments - Retorna todos os deployments;
+kubectl get rs - Retorna todos os replicaSets;
 kubectl run [nome do pod que deseja criar] --image=[imagem:versao] - Cria um pod com uma imagem para um container
 que será criado dentro do pod;
 kubectl describe pod [nome do pod] - Retorna informações sobre aquele pod;
@@ -114,3 +117,93 @@ spec:
       envFrom:
         - configMapRef:
             name: configmap -> Faz a referência ao configMap criado anteriormente
+
+ReplicaSets -> Recurso de disponibilidade e recursividade, utilizado para sempre que um pod caia ou pare de funcionar, automaticamente o kubernetes
+irá subistitui-lo por uma cópia do mesmo;
+
+Segue o exemplo abaixo para criação de um ReplicaSet:
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: portal-noticias-replicaset
+spec:
+  template:
+    metadata:
+      name: portal-noticias
+      labels:
+        app: portal-noticias
+    spec:
+      containers:
+        - name: portal-noticias-container
+          image: aluracursos/portal-noticias:1
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: portal-configmap
+  replicas: 3 -> irá criar 3 réplicas do pod
+  selector:
+    matchLabels:
+      app: portal-noticias -> irá selecionar os pods cujo label seja igual
+
+Deployment -> Tem o mesmo objetivo que o ReplicaSets, porém com recursos de versionamento de imagem, controle, etc; 
+OBS: O deployment implicitamente também cria replicaSets;
+
+Segue o exemplo abaixo para criação de um Deployment:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3 -> irá criar 3 réplicas do pod
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        app: nginx-pod
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx-latest
+          ports:
+            - containerPort: 80
+  selector:
+    matchLabels:
+      app: nginx-pod -> irá selecionar os pods cujo label seja igual
+
+Comandos de versionamento para deployments:
+
+kubectl rollout history deployment/nginx-deployment -> Retorna o histórico de versionamento
+kubectl apply -f nginx-deployment.yaml --record -> A flag --record grava o deploy no versionamento
+kubectl annotate deployment nginx-deployment kubernetes.io/change-cause="Definindo outra versão da imagem" -> Altera a informação da versão atual
+kubectl rollout undo deployment nginx-deployment --to-revision=2
+
+Persistencia de dados:
+
+Volumes com hostPath são dependentes de pods, a partir do momento que um pod é encerrado, o volume também é.
+Volumes com hostPath são vinculados entre um diretório host e um diretório de dentro do container.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: um-pod-qualquer
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      volumeMounts:
+        - mountPath: /pasta-de-arquivos
+          name: volume-pod
+  volumes:
+    - name: volume-pod
+      hostPath:
+        path: /C/Users/Davi/Desktop/uma-pasta-no-host
+        type: Directory
+
+**Existem outros tipos de persistencia, como por exemplo o PersistentVolume junto com PersistentVolumeClaim,
+que são muito utilizados na criação de volumes em plataformas cloud, fazendo com que o volume seja independente
+do pod, pois é criado um disco, um pv, um pvc para acessar um pv que acessa um disco. No entanto, não existem somente
+esses meios de criação e manipulação de volumes, existem vastas opções, basta seguir a documentação.
+
+Link da documentação: https://kubernetes.io/pt-br/docs/concepts/storage/persistent-volumes/
+Video auxiliar: https://www.youtube.com/watch?v=_WxMQRFmXd4

@@ -204,6 +204,46 @@ spec:
 que são muito utilizados na criação de volumes em plataformas cloud, fazendo com que o volume seja independente
 do pod, pois é criado um disco, um pv, um pvc para acessar um pv que acessa um disco. No entanto, não existem somente
 esses meios de criação e manipulação de volumes, existem vastas opções, basta seguir a documentação.
+Uma forma de criar esses persists volums é através de uma storageClass, que de forma dinâmica possibilita
+pods criarem PVs e discos de forma dinâmica, conforme a necessidade. Pode-se criar também volums através de 
+StateFullSet, que funciona parecido como um deployment, porém também de forma dinâmica, com uso de storage
+class e um pvc, ele gera pvs;
 
 Link da documentação: https://kubernetes.io/pt-br/docs/concepts/storage/persistent-volumes/
-Video auxiliar: https://www.youtube.com/watch?v=_WxMQRFmXd4
+Video auxiliar: https://www.youtube.com/watch?v=_WxMQRFmXd4 
+
+
+Liveness Probes:
+
+É utilizado para manter a aplicação saudável, realizando testes periódicos, sendo que caso seja detectado
+algum erro, o pod será reiniciado. Essa configuração poderá ser adicionada dentro do escopo de criação
+de um container dentro de um pod.
+
+Ex:
+
+livenessProbe:
+  httpGet:
+    path: / -> caminho da página http
+    port: 80 -> porta que está rodando a aplicação
+  periodSeconds: 10 -> o teste será executado a cada 10s
+  failureThreshold: 3 -> a aplicação só poderá suportar 3 falhas antes do reinicio
+  initialDelaySeconds: 20 -> os testes começaram 20s a partir do container subir
+
+0BS: O livenessProbe indicará falha caso o código de retorno seja menor que 200 ou maior/igual a 400.
+
+Readiness Probes:
+
+É utilizado para informar ao kubernetes que aquele container que acabou de ser reiniciado já está pronto
+para receber requisicoes novamente, pois cada container demora um período até que esteja pronto, pois precisam
+carregar suas dependencias, etc.
+
+Ex:
+
+readinessProbe:
+  httpGet:
+    path: / -> caminho da página http
+    port: 80 -> porta que está rodando a aplicação
+  periodSeconds: 10 -> o teste será executado a cada 10s
+  failureThreshold: 5 -> a aplicação irá verificar n vezes se o container está pronto, a partir da 4º tentativa
+  as requisicoes serão enviadas mesmo assim;
+  initialDelaySeconds: 3 -> os testes começaram 20s a partir do container subir

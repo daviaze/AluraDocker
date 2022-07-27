@@ -8,6 +8,10 @@ kubectl get pods - Retorna todos os pods;
 kubectl get svc - Retorna todos os serviços;
 kubectl get deployments - Retorna todos os deployments;
 kubectl get rs - Retorna todos os replicaSets;
+kubectp get pv - Retorna todos os PersistentVolums;
+kubectl get pvc - Retorna todos os PersistentVolumsClaims;
+kubectl get sc - Retorna todos os StorageClass;
+kubectl get hpa - Retorna todos os Horizontal Pod AutoScale;
 kubectl run [nome do pod que deseja criar] --image=[imagem:versao] - Cria um pod com uma imagem para um container
 que será criado dentro do pod;
 kubectl describe pod [nome do pod] - Retorna informações sobre aquele pod;
@@ -246,4 +250,38 @@ readinessProbe:
   periodSeconds: 10 -> o teste será executado a cada 10s
   failureThreshold: 5 -> a aplicação irá verificar n vezes se o container está pronto, a partir da 4º tentativa
   as requisicoes serão enviadas mesmo assim;
-  initialDelaySeconds: 3 -> os testes começaram 20s a partir do container subir
+  initialDelaySeconds: 3 -> os testes começaram 3s a partir do container subir
+
+
+Escalabilidade com Horizontal Pod AutoScale:
+
+É utilizado para deixar a aplicação escalável conforme a necessidade de processamento. Esta configuração
+pode ser feita diretamente na criação do container de um pod, também criar um hpa, e configurar um servidor
+de métricas, vulgo components.yaml;
+
+Ex:
+
+resources:
+  requests:
+    cpu: 10m -> Exige 10 milicores de CPU para funcionar
+
+Ex de Hpa:
+apiVersion: autoscalling/v2beta2
+kind: HorizontalPodAutoScaler
+metadata:
+  name: nginx-hpa
+spec:
+  scaleTargetRef:
+    apiVerison: apps/v1
+    kind: Deployment
+    name: nginx-deployment
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu -> as metricas vão se basear na CPU do sistema
+        target:
+          type: Utilization -> baseado na utilizacao
+          averageUtilization: 50 -> o autoscale vai acontecer quanto a utilização ultrapassar 50% dos milicores de CPU
+          necessários para o container funcionar
